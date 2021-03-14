@@ -1,0 +1,38 @@
+.menu {
+	position: absolute;
+	z-index: 5;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: #008cff;
+	color: white;
+	
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	transition: transform 1s;
+
+	@include Button(white,#008cff);
+
+	&.close {
+		transform: translateX(-100%);
+	}
+
+	small {
+		position: absolute;
+		bottom: 12px;
+		right: 12px;
+	}
+}
+
+.nav {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 4;
+	padding: 12px;
+	
+	@include Button(black, white);
+}

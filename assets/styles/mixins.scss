@@ -1,0 +1,11 @@
+@mixin Button($color1,$color2) {
+	button {
+		color: $color1;
+		border: 2px dashed $color1;
+
+		&:hover {
+			background-color: $color1;
+			color: $color2;
+		}
+	}
+}

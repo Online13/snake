@@ -1,0 +1,43 @@
+
+@keyframes appear {
+	from {
+		transform: scale(0);
+	}
+}
+
+.state-game {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 4;
+	width: 100%;
+	height: 100%;
+	max-width: 100vw;
+	max-height: 100vh;
+	color: white;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	h1 {
+		transform-origin: bottom;
+		animation: appear 1s cubic-bezier(.65,.05,.46,1.53);
+	}
+
+	&.none {
+		display: none;
+	}
+
+	&.win {
+		background-color: rgba(84, 230, 132, 0.925);
+		
+		@include Button(white,rgba(84, 230, 132, 0.925));
+	}
+
+	&.lose {
+		background-color: rgba(236, 52, 52, 0.842);
+		@include Button(white,rgba(236, 52, 52, 0.842));
+	}
+}
+
