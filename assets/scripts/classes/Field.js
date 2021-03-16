@@ -1,17 +1,19 @@
 /**
  * @class 
  * @classdesc represent field where snake move and eat
- * @extends GameObject
+ * @extends Environment
  */
-class Field extends GameObject {
+class Field extends Environment {
 	/**
 	 * Create a field.
 	 * @param {number} size - size of terrain
 	 */
 	constructor(size) {
-		super(size);
-		this.gamestate = this.GameState();
-		this.object = this.Object();
+		super();
+		this.size = size;
+
+		this.gamestate = this.createGameState();
+		this.object = this.createObject();
 		this.grid = generateArray2D(size,size);
 		
 		this.get = this.get.bind(this);
@@ -20,7 +22,7 @@ class Field extends GameObject {
 		this.getGrid = this.getGrid.bind(this);
 		this.free = this.free.bind(this);
 		
-		this.data = { 
+		this.data = {
 			size: this.size,
 			get: this.get,
 			clear: this.clear,
@@ -28,12 +30,16 @@ class Field extends GameObject {
 			num: this.getGrid
 		};
 	}
+	
+	static VOID = 0;
+	static PIECE = 1;
+	static PART = 3;
 
 	/**
 	 * Create stategame tag and return it
 	 * @return { HTMLElement } The stategame tag
 	 */
-	GameState() {
+	createGameState() {
 		const div = document.createElement('div');
 			div.classList.add('state-game');
 			div.classList.add('none');
@@ -45,7 +51,7 @@ class Field extends GameObject {
 	 * Create table tag and add stategame tag
 	 * @return { HTMLElement } The field tag
 	 */
-	Object() {
+	createObject() {
 		const table = document.createElement('table');
 		table.classList.add('table');
 		let tr = null, td = null;
@@ -55,7 +61,7 @@ class Field extends GameObject {
 				td = document.createElement('td');
 				td.dataset['i'] = i;
 				td.dataset['j'] = j;
-				adaptSizeCase(td,this.globalSize);
+				adaptSizeCase(td, Game.globalSize);
 				tr.appendChild(td);
 			}
 			table.appendChild(tr);
@@ -118,7 +124,7 @@ class Field extends GameObject {
 	 * Show gamestate tag and show state game
 	 * @param { boolean } win win game or lose
 	 */
-	end(win) {
+	displayGameState(win) {
 		let state = win ? 'win' : 'lose';
 		this.gamestate.classList.remove('none');
 		this.gamestate.classList.add(state);
@@ -138,5 +144,11 @@ class Field extends GameObject {
 				case 'ArrowDown': cb('down'); break;
 			}
 		});
+	}
+
+	update() {
+		document.querySelectorAll('td').forEach(td => {
+			adaptSizeCase(td,Game.globalSize);
+		})
 	}
 }

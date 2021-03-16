@@ -1,25 +1,32 @@
 class Game {
 	
 	constructor(size) {
+		this.size = size;
 		this.about = new About('about');
-		this.init(size);
 		this.finished = false;
 		this.audio = {
-			win: document.createElement('audio'),
-			lose: document.createElement('audio'),
+			win: new Audio('./assets/song/win.wav'),
+			lose:  new Audio('./assets/song/lose.wav'),
+			piece: new Audio('./assets/song/coin03.wav'),
 		};
-		this.audio.win.src = './assets/song/win.wav';
-		this.audio.lose.src = './assets/song/lose.wav';
+		this.init();
+
+		window.addEventListener('resize',(e) => {
+			Game.globalSize = computeSizeCase(this.size);
+			console.log('resize');
+		});
 	}
 
-	init(size) {
+	static globalSize = 0;
+
+	init() {
+		Game.globalSize = computeSizeCase(this.size);
 		this.highscore = parseInt(localStorage.getItem('hscore')) + 5 || 5;
 		this.score = 0;
-		this.size = size;
-		this.piece = new Piece()
-		this.field = new Field(size);
+		this.piece = new Piece();
+		this.field = new Field(this.size);
 		this.emit = this.emit.bind(this);
-		this.snake = new Snake(this.field.data, this.emit);
+		this.snake = new Snake({ ...this.field.data, sound: this.audio }, this.emit);
 		this.about.score = [this.score,this.highscore];
 	}
 	
@@ -30,11 +37,11 @@ class Game {
 		// render Snake
 		this.snake.render();
 		// render Piece
-		this.piece.generate(this.field.getFree(this.snake.head.position.current));
+		this.piece.generate(this.field.free(this.snake.head.position.current));
 		this.piece.update();
 		this.piece.render();
-		// save in field piece position
-		this.field.save(this.piece.position, 1);
+		// set in field piece position
+		this.field.set(this.piece.position, this.piece.num);
 		// handle input
 		this.field.onkeyup((direction) => {
 			if (direction != null) this.snake.move(direction);
@@ -43,9 +50,9 @@ class Game {
 
 	stop() {
 		this.field.delete();
-		this.piece.delete();
 		this.snake.delete();
-		this.init(this.size);
+		this.piece.delete();
+		this.init();
 	}
 
 	replay() {
@@ -56,11 +63,11 @@ class Game {
 	emit(eventName, ...params) {
 		switch (eventName) {
 			case 'eat':
-				this.piece.generate(this.field.getFree(this.snake.head.position.current));
+				this.piece.generate(this.field.free(this.snake.head.position.current));
 				this.piece.update();
-				this.field.save(this.piece.position, 1);;
+				this.field.set(this.piece.position, this.piece.num);
 				this.score++;
-				this.about.score = [this.score,this.highscore];;
+				this.about.score = [this.score,this.highscore];
 
 				if (this.score >= this.highscore) {
 					localStorage.setItem('hscore', this.score);
@@ -71,11 +78,18 @@ class Game {
 				break;
 			case 'end':
 				this.finished = true;
-				params[0] ? this.audio.win.play() : this.audio.lose.play();
-				this.field.end(params[0]);
+				this.emit(params[0] ? 'win': 'lose');
+				this.field.displayGameState(params[0]);
 				this.field.gamestate.querySelector('button').onclick = () => {
 					this.replay();
 				}
+				break;
+
+			case 'win':
+				this.audio.win.play();
+				break;
+			case 'lose':
+				this.audio.lose.play();
 				break;
 			default:
 				alert('what ?');

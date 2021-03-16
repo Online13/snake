@@ -6,24 +6,24 @@ const parent = document.querySelector('.container');
  */
 const GameObject = function() {
 	this.object = null;
+	
 }
 
 GameObject.prototype.update = null;
 
 /**
  * add object to parent
- * @function 
- * @name render
  */
 GameObject.prototype.render = function () {
 	parent.appendChild(this.object);
-};;
+	adaptSizeCase(this.object, Game.globalSize);
+	adaptPosition(this.object, Game.globalSize);
+};
 
 /**
  * remove object to parent
- * @function 
- * @name delete
  */
 GameObject.prototype.delete = function () {
 	parent.removeChild(this.object);
+	this.object = null;
 }

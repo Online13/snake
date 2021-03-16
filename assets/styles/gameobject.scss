@@ -1,4 +1,4 @@
-$size: 75px;
+$size: 7.6vh;
 
 .table {
 	width: max-content;
@@ -9,18 +9,6 @@ $size: 75px;
 }
 
 .table td {
-	min-width: $size;
-	min-height: $size;
-	width: $size;
-	height: $size;
-
-	@media only screen and (max-width: 800px) {
-		min-width: 10vw;
-		min-height: 10vw;
-		width: 10vw;
-		height: 10vw;
-	}
-
 	border: 1px solid silver;
 }
 
@@ -38,12 +26,6 @@ $size: 75px;
 %object {
 	width: $size;
 	height: $size;
-
-	@media only screen and (max-width: 800px) {
-		width: 10vw;
-		height: 10vw;
-	}
-
 	position: absolute;
 }
 
@@ -56,21 +38,18 @@ $size: 75px;
 	}
 }
 
-
 @for $i from 0 through 100 {
 	[data-i="#{$i}"] {
-		top: $i * $size + 0px;
-		@media only screen and (max-width: 800px) {
-			top: $i * 10vw;
-		
-		}
+		top: $i * $size;
 	}
 	[data-j="#{$i}"] {
-		left: $i * $size + 0px;
-		@media only screen and (max-width: 800px) {
-			left: $i * 10vw;
-		}
+		left: $i * $size;
 	}
+}
+
+.wall {
+	@extend %object;
+	background-color: rgba(66, 66, 66, 0.493);
 }
 
 .piece {
@@ -83,7 +62,7 @@ $size: 75px;
 
 .part {
 	@extend %object;
-	//transition: top .3s,left .3s;
+	transition: top 0.3s, left 0.3s;
 	background-color: rgb(22, 124, 240);
 	border-radius: 4px;
 	border: 1px solid rgba(0, 0, 0, 0.24);

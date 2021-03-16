@@ -1,24 +1,17 @@
-class Snake extends GameObject {
+class Snake extends Actor {
+	
 	constructor(envData, emit) {
 		super();
 		this.head = new Head(3,3, envData, emit);
-		this.last = null;
 		this.body = [];
+
+		this.last = null;
 		this.newBody = null;
 		this.environnement = envData;
 		this.emit = emit;
-
-		this.audio = document.createElement('audio');
-		this.audio.src = "./assets/song/coin03.wav";
-		this.loaded = false;
-
 		this.body.forEach(part => {
-			this.environnement.save(part.position.current, 3);
+			this.environnement.set(part.position.current, 3);
 		});
-
-		this.audio.oncanplay = () => {
-			this.loaded = true;
-		}
 	}
 
 	upLevel() {
@@ -43,20 +36,20 @@ class Snake extends GameObject {
 			
 			// move all parts
 			this.body.forEach((part,i) => {
-				this.environnement.remove(part.position.current);
+				this.environnement.clear(part.position.current);
 				if (i === 0) {
 					part.move(this.head.position.last);
 				} else {
 					part.move(this.body[i-1].position.last);
 				}
-				this.environnement.save(part.position.current, 3);
+				this.environnement.set(part.position.current, part.num);
 			});
 			
 			
 			const current = this.head.position.current;
 			const have = this.environnement.get(current);
 			
-			if (have > 0 && this.loaded) this.audio.play();
+			if (have > 0) this.environnement.sound.piece.play();
 
 			// flip
 			this.update();
@@ -65,7 +58,7 @@ class Snake extends GameObject {
 			if ( this.newBody != null) {
 				this.upLevel()
 				this.newBody.render();
-				this.environnement.save(this.newBody.position.current, 3);
+				this.environnement.set(this.newBody.position.current, this.newBody.num);
 				this.body.push(this.newBody);
 				this.last = this.newBody;
 				this.newBody = null;
@@ -73,7 +66,7 @@ class Snake extends GameObject {
 			
 			// test if eat
 			if (have > 0) {
-				this.environnement.remove(current)
+				this.environnement.clear(current)
 				this.grow();
 				this.emit('eat');
 			}
@@ -94,7 +87,5 @@ class Snake extends GameObject {
 		});
 	}
 
-	stop() {
-		window.clearInterval(this.head.id);
-	}
+	stop() { window.clearInterval(this.head.id); }
 }

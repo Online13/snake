@@ -15,6 +15,7 @@ class Head extends Part {
 		this.id = null;
 		this.environnement = envData;
 		this.emit = emit;
+		this.moveDone = true;
 	}
 
 	/**
@@ -24,7 +25,8 @@ class Head extends Part {
 	 * @returns 
 	 */
 	move(direction, cb) {
-		
+		if (this.moveDone === false)
+			return;
 		// to forbidden move to opposite direction
 		if (isOpposite(direction,this.direction))
 			return;
@@ -32,7 +34,9 @@ class Head extends Part {
 		this.object.classList.remove(this.direction);
 		this.direction = direction;
 		this.object.classList.add(this.direction);
-			
+		
+		this.moveDone = false;
+		
 		// if moved, stop here
 		if (this.id !== null) {
 			return;
@@ -50,6 +54,8 @@ class Head extends Part {
 				this.position.current = temp;
 			}
 			cb();
+
+			this.moveDone = true;
 		}, 300);
 	}
 
@@ -57,7 +63,6 @@ class Head extends Part {
 		super.render();
 		this.object.classList.add('head');
 		this.object.classList.add(this.direction);
-		
 	}
 }
 

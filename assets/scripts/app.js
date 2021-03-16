@@ -12,5 +12,6 @@ btn_next.addEventListener('click', e => {
 
 btn_prev.addEventListener('click', e => {
 	menu.classList.remove('close');
-	if (!game.finished) game.stop();
+	game.stop();
+	game = null;
 });
