@@ -9,23 +9,23 @@ class Field extends GameObject {
 	 * @param {number} size - size of terrain
 	 */
 	constructor(size) {
-		super();
-		this.size = size;
-		this.object = this.create();
-		this.numeric = generateArray2D(size,size);
+		super(size);
+		this.gamestate = this.GameState();
+		this.object = this.Object();
+		this.grid = generateArray2D(size,size);
 		
 		this.get = this.get.bind(this);
-		this.remove = this.remove.bind(this);
-		this.save = this.save.bind(this);
-		this.getNumeric = this.getNumeric.bind(this);
-		this.getFree = this.getFree.bind(this);
+		this.clear = this.clear.bind(this);
+		this.set = this.set.bind(this);
+		this.getGrid = this.getGrid.bind(this);
+		this.free = this.free.bind(this);
 		
 		this.data = { 
 			size: this.size,
 			get: this.get,
-			remove: this.remove,
-			save: this.save,
-			num: this.getNumeric
+			clear: this.clear,
+			set: this.set,
+			num: this.getGrid
 		};
 	}
 
@@ -33,7 +33,7 @@ class Field extends GameObject {
 	 * Create stategame tag and return it
 	 * @return { HTMLElement } The stategame tag
 	 */
-	static stateGame() {
+	GameState() {
 		const div = document.createElement('div');
 			div.classList.add('state-game');
 			div.classList.add('none');
@@ -45,7 +45,7 @@ class Field extends GameObject {
 	 * Create table tag and add stategame tag
 	 * @return { HTMLElement } The field tag
 	 */
-	create() {
+	Object() {
 		const table = document.createElement('table');
 		table.classList.add('table');
 		let tr = null, td = null;
@@ -55,11 +55,11 @@ class Field extends GameObject {
 				td = document.createElement('td');
 				td.dataset['i'] = i;
 				td.dataset['j'] = j;
+				adaptSizeCase(td,this.globalSize);
 				tr.appendChild(td);
 			}
 			table.appendChild(tr);
 		}
-		this.gamestate = Field.stateGame();
 		table.appendChild(this.gamestate);
 		return table;
 	}
@@ -68,26 +68,24 @@ class Field extends GameObject {
 	 * Get all coordonate free in field
 	 * @return { Array<Array<number>> } list of free coordonate
 	 */
-	getFree(exception) {
-		let free = [];
+	free(exception) {
+		let list = [];
 		for (let i = 0;i < this.size;i++) {
 			for (let j = 0;j < this.size;j++) {
 				if (i === exception.x && j === exception.y) continue;
-				if (this.numeric[i][j] === 0) free.push([i,j]);
+				if (this.grid[i][j] === 0) list.push([i,j]);
 			}
 		}
-		return free;
+		return list;
 	}
 
 	/**
 	 * Get value at row x, and column y
-	 * @param { number | Position } x if number, row value else, the coordinate
-	 * @param { number | null } y if number, column value else, null
-	 * @return { number } value in field : 0 if void, 1 if piece and 2 if outside of field, 3 if part of snake
+	 * @param { Position } position the coordinate
+	 * @return { number } value in field
 	 */
-	get(x,y=null) {
-		let pos = (x instanceof Position) ? x : new Position(x,y);
-		return (pos.in(0,this.size)) ? this.numeric[pos.x][pos.y] : 2;
+	get(position) {
+		return (position.in(0,this.size)) ? this.grid[position.x][position.y] : 2;
 	}
 
 	/**
@@ -95,24 +93,26 @@ class Field extends GameObject {
 	 * @param { Position } position coordinate
 	 * @param { number } value 0 | 1 | 2 | 3
 	 */
-	save(position, value) {
-		this.numeric[position.x][position.y] = value;
+	set(position, value) {
+		if (!position.in(0,this.size)) throw new Error('position invalide');
+		this.grid[position.x][position.y] = value;
 	}
 
 	/**
 	 * Set value to zero at given position
 	 * @param { Position } position coordinate
 	 */
-	remove(position) {
-		this.numeric[position.x][position.y] = 0;
+	clear(position) {
+		if (!position.in(0,this.size)) throw new Error('position invalide');
+		this.grid[position.x][position.y] = 0;
 	}
 
 	/**
 	 * Access to current state of case in array
-	 * @return { Array<Array<number>> } numeric value
+	 * @return { Array<Array<number>> } grid value
 	 */
-	getNumeric() {
-		return this.numeric;
+	getGrid() {
+		return this.grid;
 	}
 
 	/**
