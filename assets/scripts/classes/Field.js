@@ -103,8 +103,7 @@ class Field extends GameObject {
 	 * @param { Position } position coordinate
 	 */
 	clear(position) {
-		if (!position.in(0,this.size)) throw new Error('position invalide');
-		this.grid[position.x][position.y] = 0;
+		this.set(position,0);
 	}
 
 	/**
